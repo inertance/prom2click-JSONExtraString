@@ -1,0 +1,1 @@
+nohup ./bin/prom2click -ch.batch 35000 -ch.db metrics -ch.table dist_json -ch.dsn tcp://10.0.50.1:9100?database=metrics&alt_hosts=10.0.50.2:9100,10.0.50.3:9100,10.0.50.4:9100 -log.format logger:stdout?json=true -log.level info>./prom2click.log &
