@@ -1,6 +1,36 @@
 # prom2click-json
 modify from prom2click , change the type of label from array to json, it will be simpler to query form clickhouse by use the function JSONExtraString
+### Compare
+### old version
+SELECT tags
+FROM dist
+WHERE name = 'go_gc_duration_seconds_sum'
+LIMIT 5
 
+┌─tags───────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9108','job=spark','server=spark']                      │
+│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9278','job=exec7dJobs','server=yarn7dJobs']            │
+│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9279','job=exec','server=yarnRunnignJobs']             │
+│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9280','job=execIdBingdings','server=yarnBingdingJobs'] │
+│ ['__name__=go_gc_duration_seconds_sum','instance=localhost:9090','job=prometheus']                                 │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+5 rows in set. Elapsed: 0.015 sec. Processed 9.10 thousand rows, 1.60 MB (592.15 thousand rows/s., 104.48 MB/s.)
+
+### new version
+SELECT tags
+FROM dist_json
+LIMIT 5
+
+┌─tags──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
+│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
+│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
+│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
+│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+5 rows in set. Elapsed: 0.012 sec. 
 # prom2click
 
 Prom2click is a Prometheus remote storage adapter for [Clickhouse](https://clickhouse.yandex/). This project is in the early stages, beta testers are welcome :). Consider it experimental - that said it is quite promising as a scalable and highly available remote storage for Prometheus.
@@ -158,34 +188,4 @@ Usage of ./bin/prom2click:
 * add proper db error handling
 * add tests
 
-### Compare
-### old version
-SELECT tags
-FROM dist
-WHERE name = 'go_gc_duration_seconds_sum'
-LIMIT 5
 
-┌─tags───────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9108','job=spark','server=spark']                      │
-│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9278','job=exec7dJobs','server=yarn7dJobs']            │
-│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9279','job=exec','server=yarnRunnignJobs']             │
-│ ['__name__=go_gc_duration_seconds_sum','instance=10.0.165.2:9280','job=execIdBingdings','server=yarnBingdingJobs'] │
-│ ['__name__=go_gc_duration_seconds_sum','instance=localhost:9090','job=prometheus']                                 │
-└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-
-5 rows in set. Elapsed: 0.015 sec. Processed 9.10 thousand rows, 1.60 MB (592.15 thousand rows/s., 104.48 MB/s.)
-
-### new version
-SELECT tags
-FROM dist_json
-LIMIT 5
-
-┌─tags──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
-│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
-│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
-│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
-│ {"__name__":"go_gc_duration_seconds_sum","instance":"10.0.165.2:9108","job":"spark","server":"spark"} │
-└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
-
-5 rows in set. Elapsed: 0.012 sec. 
